@@ -58,8 +58,11 @@ public abstract class AopConfigUtils {
 
 	static {
 		// Set up the escalation list...
+		// 这个优先级最低
 		APC_PRIORITY_LIST.add(InfrastructureAdvisorAutoProxyCreator.class);
+		// 解析XML -AOP 切面需要用到这个
 		APC_PRIORITY_LIST.add(AspectJAwareAdvisorAutoProxyCreator.class);
+		// 这个优先级最高
 		APC_PRIORITY_LIST.add(AnnotationAwareAspectJAutoProxyCreator.class);
 	}
 
