@@ -1,7 +1,8 @@
 package com.xiangxue.jack.bean;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Student {
 
 	private String username = "jack";
