@@ -16,16 +16,16 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
@@ -88,12 +88,17 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 
 	@Override
 	protected List<Advisor> findCandidateAdvisors() {
-		//可以不看
-		// Add all the Spring advisors found according to superclass rules.
+		/**
+		 * 增强器两类处理：
+		 *  1. 通过<aop>标签添加的增强，这部分会在解析配置文件的时候添加到Spring容器中，
+		 *  只需要获取当前容器中Advisor类型的bean就可以获取到该类增强；
+		 *  2. 通过注解添加的增强，获取此类增强还需要对bean进行遍历解析
+		 */
 		List<Advisor> advisors = super.findCandidateAdvisors();
 		// Build Advisors for all AspectJ aspects in the bean factory.
 		//主要看这里，创建候选的切面
 		if (this.aspectJAdvisorsBuilder != null) {
+			//获取Bean的注解增强的功能
 			advisors.addAll(this.aspectJAdvisorsBuilder.buildAspectJAdvisors());
 		}
 		return advisors;

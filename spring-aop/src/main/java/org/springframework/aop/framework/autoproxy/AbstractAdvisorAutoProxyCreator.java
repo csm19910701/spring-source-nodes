@@ -16,8 +16,6 @@
 
 package org.springframework.aop.framework.autoproxy;
 
-import java.util.List;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.support.AopUtils;
@@ -26,6 +24,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.List;
 
 /**
  * Generic auto proxy creator that builds AOP proxies for specific beans
@@ -92,12 +92,14 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @see #extendAdvisors
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
-		//找到候选的切面,其实就是一个寻找有@Aspectj注解的过程，把工程中所有有这个注解的类封装成Advisor返回
+		//1、找到候选的切面,其实就是一个寻找有@Aspectj注解的过程，把工程中所有有这个注解的类封装成Advisor返回
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
 
-		//判断候选的切面是否作用在当前beanClass上面，就是一个匹配过程。。现在就是一个匹配
+		//2、判断候选的切面是否作用在当前beanClass上面，就是一个匹配过程。。现在就是一个匹配
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
+		//3、模版方法，由子类拓展增强器(用作子类对已经查找完成的增强器进行拓展)
 		extendAdvisors(eligibleAdvisors);
+		//4、如果获取的Advisor集合eligibleAdvisors不为空,则根据优先级进行排序
 		if (!eligibleAdvisors.isEmpty()) {
 			//对有@Order@Priority进行排序
 			eligibleAdvisors = sortAdvisors(eligibleAdvisors);

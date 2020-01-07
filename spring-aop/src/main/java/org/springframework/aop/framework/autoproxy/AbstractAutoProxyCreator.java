@@ -16,19 +16,9 @@
 
 package org.springframework.aop.framework.autoproxy;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.TargetSource;
@@ -49,6 +39,10 @@ import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostP
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
@@ -334,12 +328,20 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @return a proxy wrapping the bean, or the raw bean instance as-is
 	 */
 	protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
+		// 如果已经处理过（targetSourcedBeans存放已经增强过的bean）
 		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
 			return bean;
 		}
+		// advisedBeans的key为cacheKey，value为boolean类型，表示是否进行过代理
+		// 对于已经处理过的bean,不需要再次进行处理，节省时间
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
 			return bean;
 		}
+
+		// 如果目标类代表一个基础设施类,基础设施类不应代理,或者配置了指定bean不需要自动代理
+		// isInfrastructureClass(): 如果目标类继承自Advice、Pointcut、Advisor、AopInfrastructureBean
+		// 或者带有@Aspect注解，或被Ajc（AspectJ编译器）编译都会被认定为内部基础设置类, 从而该目标类将会跳过扩展
+		// shouldSkip(): 判断目标bean是否需要跳过{@link AspectJAwareAdvisorAutoProxyCreator#shouldSkip(java.lang.Class, java.lang.String)}
 		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
 			return bean;
