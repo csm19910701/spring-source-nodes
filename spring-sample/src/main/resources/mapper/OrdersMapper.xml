@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.springframework.mybatis.mapper.OrdersMapper">
+    <resultMap id="BaseResultMap" type="org.springframework.mybatis.entity.Orders">
+        <id column="order_id" property="orderId" jdbcType="INTEGER"/>
+        <id column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="order_price" property="orderPrice" jdbcType="DECIMAL"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+        order_id, user_id, order_price, update_time
+    </sql>
+
+    <!--数据插入-->
+    <insert id="insertOrder" parameterType="org.springframework.mybatis.entity.Orders">
+        insert into orders(user_id, order_price, update_time)
+        values (
+            #{userId,jdbcType=VARCHAR},
+            #{orderPrice,jdbcType=DECIMAL},
+            #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+</mapper>
