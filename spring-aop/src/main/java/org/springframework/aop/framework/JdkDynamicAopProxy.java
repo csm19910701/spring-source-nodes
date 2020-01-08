@@ -16,16 +16,9 @@
 
 package org.springframework.aop.framework;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.List;
-
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aop.AopInvocationException;
 import org.springframework.aop.RawTargetAccess;
 import org.springframework.aop.TargetSource;
@@ -34,6 +27,12 @@ import org.springframework.core.DecoratingProxy;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.List;
 
 /**
  * JDK-based {@link AopProxy} implementation for the Spring AOP framework,
@@ -119,9 +118,15 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 		if (logger.isTraceEnabled()) {
 			logger.trace("Creating JDK dynamic proxy: " + this.advised.getTargetSource());
 		}
-		//advised是代理工厂对象
+		//1、获取所有被代理的接口(JDK动态代理基于接口)
 		Class<?>[] proxiedInterfaces = AopProxyUtils.completeProxiedInterfaces(this.advised, true);
+		// 2、遍历所有代理接口中的方法,查找到某个接口中如果存在equals()和hashCode()方法,
+		//    则进行标识, 如果标识为true,则后面会对这两个方法进行代理
 		findDefinedEqualsAndHashCodeMethods(proxiedInterfaces);
+		// 3、创建代理对象并返回
+		//    注意: 在newProxyInstance()方法中传入的是this, 说明JdkDynamicAopProxy实现了InvocationHandler接口
+		//    并重写的invoke()方法, 那么增强的织入是在invoke()方法中实现的
+		//    {@link JdkDynamicAopProxy#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
 		return Proxy.newProxyInstance(classLoader, proxiedInterfaces, this);
 	}
 
