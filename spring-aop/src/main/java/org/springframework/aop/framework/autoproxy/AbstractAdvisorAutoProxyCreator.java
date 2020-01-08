@@ -73,8 +73,9 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	protected Object[] getAdvicesAndAdvisorsForBean(
 			Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
 
-		//找到合格的切面，重点看
+		//获取合适的增强器 重点看
 		List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
+		//数组为空，返回null
 		if (advisors.isEmpty()) {
 			return DO_NOT_PROXY;
 		}

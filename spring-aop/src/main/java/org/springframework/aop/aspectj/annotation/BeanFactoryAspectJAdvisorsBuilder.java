@@ -87,7 +87,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 			synchronized (this) {
 				aspectNames = this.aspectBeanNames;
 				if (aspectNames == null) {
-					// advisors集合存储容器中所有的切面类中定义的增强/通知Advice (注意是增强/通知, 没有切入点)
+					// advisors集合存储容器中所有的切面类中定义的增强/通知Advice (注意是增强/通知, 没有切入点Pointcut信息)
 					List<Advisor> advisors = new ArrayList<>();
 					aspectNames = new ArrayList<>();
 					//获取spring容器中的所有bean的名称BeanName
