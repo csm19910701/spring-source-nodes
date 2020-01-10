@@ -367,6 +367,10 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					"No existing transaction found for transaction marked with propagation 'mandatory'");
 		}
 		//第一次进来大部分会走这里
+		// PROPAGATION_REQUIRED 当前有事务就是用当前事务，没事务就创建一个事务
+		// PROPAGATION_REQUIRES_NEW 如果存在事务就把当前事务挂起，然后从新创建一个新的事务
+		// PROPAGATION_NESTED 如果当前存在事务，则嵌套事务内执行（回滚的时候是按照回滚点回滚）
+		// 告诉spring如何控制事务扭转的
 		else if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED ||
 				definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW ||
 				definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {

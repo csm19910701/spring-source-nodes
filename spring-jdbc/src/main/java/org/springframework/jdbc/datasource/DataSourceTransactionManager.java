@@ -265,7 +265,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			//如果没有数据库连接
 			if (!txObject.hasConnectionHolder() ||
 					txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
-				//从连接池里面获取连接
+				//从连接池里面获取连接 ，因为spring中可以配置多个数据源，AbstractRoutingDatasource动态切换数据源
 				Connection newCon = obtainDataSource().getConnection();
 				if (logger.isDebugEnabled()) {
 					logger.debug("Acquired Connection [" + newCon + "] for JDBC transaction");
