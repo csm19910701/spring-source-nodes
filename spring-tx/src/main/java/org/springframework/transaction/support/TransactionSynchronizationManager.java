@@ -208,6 +208,7 @@ public abstract class TransactionSynchronizationManager {
 	 */
 	public static Object unbindResource(Object key) throws IllegalStateException {
 		Object actualKey = TransactionSynchronizationUtils.unwrapResourceIfNecessary(key);
+		// 上一次的事务状态对象
 		Object value = doUnbindResource(actualKey);
 		if (value == null) {
 			throw new IllegalStateException(
@@ -236,6 +237,7 @@ public abstract class TransactionSynchronizationManager {
 		if (map == null) {
 			return null;
 		}
+		//获取上一次的事务状态对象，然后返回
 		Object value = map.remove(actualKey);
 		// Remove entire ThreadLocal if empty...
 		if (map.isEmpty()) {
@@ -249,6 +251,7 @@ public abstract class TransactionSynchronizationManager {
 			logger.trace("Removed value [" + value + "] for key [" + actualKey + "] from thread [" +
 					Thread.currentThread().getName() + "]");
 		}
+		//上一次的事务状态对象，然后返回
 		return value;
 	}
 

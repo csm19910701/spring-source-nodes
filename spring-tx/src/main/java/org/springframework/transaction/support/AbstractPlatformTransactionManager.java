@@ -382,6 +382,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				try {
 					boolean newSynchronization = (getTransactionSynchronization() != SYNCHRONIZATION_NEVER);
 					//创建事务状态对象，其实就是封装了事务对象的一些信息，记录事务状态的
+					// suspendedResources存的是上一次的事务对象
 					DefaultTransactionStatus status = newTransactionStatus(
 							definition, transaction, true, newSynchronization, debugEnabled, suspendedResources);
 
@@ -626,6 +627,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		}
 		else if (transaction != null) {
 			// Transaction active but no synchronization active.
+			// 上一次的事务对象
 			Object suspendedResources = doSuspend(transaction);
 			return new SuspendedResourcesHolder(suspendedResources);
 		}
@@ -742,6 +744,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			return;
 		}
 
+		//事务提交
 		processCommit(defStatus);
 	}
 
@@ -822,6 +825,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 
 		}
 		finally {
+			// 重点看这里，事务恢复
 			cleanupAfterCompletion(status);
 		}
 	}
@@ -1040,7 +1044,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		if (status.isNewTransaction()) {
 			doCleanupAfterCompletion(status.getTransaction());
 		}
-		//判断当前事务有没有挂起的连接
+		//判断当前事务有没有挂起的连接，如果status.getSuspendedResources()！=null 表示前面执行过事务挂起操作
 		if (status.getSuspendedResources() != null) {
 			if (status.isDebug()) {
 				logger.debug("Resuming suspended transaction after completion of inner transaction");
