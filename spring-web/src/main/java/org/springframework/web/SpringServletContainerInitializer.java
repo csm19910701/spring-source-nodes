@@ -136,6 +136,10 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 	 * @param servletContext the servlet context to be initialized
 	 * @see WebApplicationInitializer#onStartup(ServletContext)
 	 * @see AnnotationAwareOrderComparator
+	 * Web容器启动的时候根据SPI技术，会调用SpringServletContainerInitializer里面的onStartup方法
+	 * onStartup方法里面有两个参数 webAppInitializerClasses、servletContext
+	 * webAppInitializerClasses：收集实现了WebApplicationInitializer接口的反射实例对象
+	 * servletContext：Servlet上下执行文
 	 */
 	@Override
 	public void onStartup(@Nullable Set<Class<?>> webAppInitializerClasses, ServletContext servletContext)
@@ -167,6 +171,8 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 
 		servletContext.log(initializers.size() + " Spring WebApplicationInitializers detected on classpath");
 		AnnotationAwareOrderComparator.sort(initializers);
+
+		//在这里会去调用所有WebApplicationInitializer实例的onStartup方法
 		for (WebApplicationInitializer initializer : initializers) {
 			initializer.onStartup(servletContext);
 		}
