@@ -57,6 +57,7 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 		Class<?>[] configClasses = getRootConfigClasses();
 		if (!ObjectUtils.isEmpty(configClasses)) {
 			//通过AnnotationConfigWebApplicationContext这个上下文加载Spring容器
+			//这个AnnotationConfigWeApplicationContext类似AnnotationConfigApplicationContext
 			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 			//这个里面会注册一个类
 			context.register(configClasses);

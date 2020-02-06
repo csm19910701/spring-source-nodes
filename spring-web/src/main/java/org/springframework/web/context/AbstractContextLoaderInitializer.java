@@ -51,6 +51,8 @@ public abstract class AbstractContextLoaderInitializer implements WebApplication
 	}
 
 	/**
+	 * web.xml会加载两个spring的上下文，一个是spring.xml的上下文，另外一个是dispatcher.xml上下文；
+	 * 一个是通过监听器方式加载进来的，一个是通过servlet加载进来的
 	 * Register a {@link ContextLoaderListener} against the given servlet context. The
 	 * {@code ContextLoaderListener} is initialized with the application context returned
 	 * from the {@link #createRootApplicationContext()} template method.

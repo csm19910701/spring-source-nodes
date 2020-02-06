@@ -174,6 +174,7 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 
 		//在这里会去调用所有WebApplicationInitializer实例的onStartup方法
 		for (WebApplicationInitializer initializer : initializers) {
+			//调用onStartup方法
 			initializer.onStartup(servletContext);
 		}
 	}

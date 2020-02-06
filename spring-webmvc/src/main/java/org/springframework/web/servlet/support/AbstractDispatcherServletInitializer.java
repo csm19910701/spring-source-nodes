@@ -57,9 +57,16 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 	public static final String DEFAULT_SERVLET_NAME = "dispatcher";
 
 
+	/**
+	 * 在web.xml文件里面会配置listening 和 dispatcher
+	 * 我们这个方法功能也是这个作用
+	 * @param servletContext
+	 * @throws ServletException
+	 */
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		super.onStartup(servletContext);
+		//注册DispatcherServlet
 		registerDispatcherServlet(servletContext);
 	}
 
