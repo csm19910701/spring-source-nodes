@@ -53,11 +53,12 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 	@Override
 	@Nullable
 	protected WebApplicationContext createRootApplicationContext() {
-		//getRootConfigClasses()是一钩子方法，在子类定义
+		//getRootConfigClasses()是一钩子方法，在子类定义，父容器
 		Class<?>[] configClasses = getRootConfigClasses();
 		if (!ObjectUtils.isEmpty(configClasses)) {
 			//通过AnnotationConfigWebApplicationContext这个上下文加载Spring容器
 			//这个AnnotationConfigWeApplicationContext类似AnnotationConfigApplicationContext
+			//加载没有@Controller注解的类
 			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 			//这个里面会注册一个类
 			context.register(configClasses);
@@ -75,6 +76,7 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 	@Override
 	protected WebApplicationContext createServletApplicationContext() {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		//SpringMvc配置的子容器，加载有@Controller注解的类
 		Class<?>[] configClasses = getServletConfigClasses();
 		if (!ObjectUtils.isEmpty(configClasses)) {
 			context.register(configClasses);
