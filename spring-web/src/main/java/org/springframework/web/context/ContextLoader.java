@@ -285,6 +285,7 @@ public class ContextLoader {
 					if (cwac.getParent() == null) {
 						// The context instance was injected without an explicit parent ->
 						// determine parent for root web application context, if any.
+						// 由Listener启动的 parent是没有值的
 						ApplicationContext parent = loadParentContext(servletContext);
 						cwac.setParent(parent);
 					}
