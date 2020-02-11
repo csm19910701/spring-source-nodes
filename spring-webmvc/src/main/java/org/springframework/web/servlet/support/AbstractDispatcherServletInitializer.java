@@ -65,6 +65,7 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 	 */
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		//创建ContextLoaderListener
 		super.onStartup(servletContext);
 		//注册DispatcherServlet
 		registerDispatcherServlet(servletContext);
@@ -86,6 +87,7 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 		Assert.hasLength(servletName, "getServletName() must not return null or empty");
 
 		//创建SpringMvc的上下文，注册MvcContainer类
+		//这个createServletApplicationContext是一个钩子方法
 		WebApplicationContext servletAppContext = createServletApplicationContext();
 		Assert.notNull(servletAppContext, "createServletApplicationContext() must not return null");
 
@@ -94,13 +96,20 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 		Assert.notNull(dispatcherServlet, "createDispatcherServlet(WebApplicationContext) must not return null");
 		dispatcherServlet.setContextInitializers(getServletApplicationContextInitializers());
 
+		//然后把创建好的dispatcherServlet放入到servlet容器中
 		ServletRegistration.Dynamic registration = servletContext.addServlet(servletName, dispatcherServlet);
 		if (registration == null) {
 			throw new IllegalStateException("Failed to register servlet with name '" + servletName + "'. " +
 					"Check if there is another servlet registered under the same name.");
 		}
 
+		/**
+		 * 如果该元素的值为负或则没有设置，则容器会当Servlet被请求时再加载。
+		 * 如果值为整数或则0，表示容器在应用启动时候加载并且初始化这个Servlet，
+		 * 值越小，servlet的优先级越高，就越先被加载
+		 */
 		registration.setLoadOnStartup(1);
+		//getServletMappings() 也是一个钩子方法
 		registration.addMapping(getServletMappings());
 		registration.setAsyncSupported(isAsyncSupported());
 
