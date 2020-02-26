@@ -248,7 +248,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				logger.trace("Could not resolve type for bean '" + beanName + "'", ex);
 			}
 		}
+		//如果类上面有@Controller注解或则@RequestMapping注解
 		if (beanType != null && isHandler(beanType)) {
+			//建立url和method的映射关系
 			detectHandlerMethods(beanName);
 		}
 	}
@@ -264,9 +266,11 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 		if (handlerType != null) {
 			Class<?> userType = ClassUtils.getUserClass(handlerType);
+			//获取方法对象和方法上面的@RequestMapping注解属性封装成对象的映射关系
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> {
 						try {
+							//将注解对象解析封装成RequestMappingInfo 对象
 							return getMappingForMethod(method, userType);
 						}
 						catch (Throwable ex) {
@@ -279,6 +283,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			}
 			methods.forEach((method, mapping) -> {
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
+				//建立url和方法的各种映射关系，反正一条根据url能够找到method对象
 				registerHandlerMethod(handler, invocableMethod, mapping);
 			});
 		}
@@ -585,8 +590,12 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		public void register(T mapping, Object handler, Method method) {
 			this.readWriteLock.writeLock().lock();
 			try {
+				//创建HandlerMethod对象，这个时候handler是一个Controller类
 				HandlerMethod handlerMethod = createHandlerMethod(handler, method);
 				assertUniqueMethodMapping(handlerMethod, mapping);
+
+				//mapping是RequestMappingInfo对象，这个里面有方法对象，如果一个方向反射调用method.invoke() ,第一个参数是实例对象 ，第二个参数就是方法调用参数
+				//handlerMethod对象里面存在对象实例、args参数信息，所以还要拿mapping、handlerMethod建立映射关系
 				this.mappingLookup.put(mapping, handlerMethod);
 
 				List<String> directUrls = getDirectUrls(mapping);
