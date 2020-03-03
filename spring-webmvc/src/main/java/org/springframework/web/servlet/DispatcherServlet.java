@@ -1011,6 +1011,8 @@ public class DispatcherServlet extends FrameworkServlet {
 				multipartRequestParsed = (processedRequest != request);
 
 				// Determine handler for the current request.
+				//获取 HandlerExecutionChain 对象，这个里面有两个对象，
+				//一个对象是MethodHandler , 另一个对象是List<HandlerInterceptor>拦截器数组
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
 					noHandlerFound(processedRequest, response);
@@ -1018,6 +1020,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Determine handler adapter for the current request.
+				//策略模式，获取一个HandlerAdapter
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
@@ -1030,10 +1033,13 @@ public class DispatcherServlet extends FrameworkServlet {
 					}
 				}
 
+				//前置过滤器，如果为false，直接返回; mappedHandler是 HandlerExecutionChain 对象
+				//HandlerExecutionChain对象里面有拦截器数组 List<HandlerInterceptor>
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
 
+				//调用Controller具体方法，核心方法调用
 				// Actually invoke the handler.
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
@@ -1042,6 +1048,8 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				applyDefaultViewName(processedRequest, mv);
+
+				//后置过滤器调用
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
 			catch (Exception ex) {
@@ -1266,6 +1274,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
 		if (this.handlerAdapters != null) {
 			for (HandlerAdapter adapter : this.handlerAdapters) {
+				//获取合适的adapter，是一个策略模式
 				if (adapter.supports(handler)) {
 					return adapter;
 				}

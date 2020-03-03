@@ -479,10 +479,13 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		//获取uri
 		String lookupPath = this.urlPathHelper.getLookupPathForRequest(request);
 
+		//是否有过滤器
 		for (HandlerInterceptor interceptor : this.adaptedInterceptors) {
 			if (interceptor instanceof MappedInterceptor) {
 				MappedInterceptor mappedInterceptor = (MappedInterceptor) interceptor;
+				//查看拦截器的规则是否跟lookupPath规则匹配
 				if (mappedInterceptor.matches(lookupPath, this.pathMatcher)) {
+					//如果匹配成功，就把拦截器假如到拦截链中
 					chain.addInterceptor(mappedInterceptor.getInterceptor());
 				}
 			}
