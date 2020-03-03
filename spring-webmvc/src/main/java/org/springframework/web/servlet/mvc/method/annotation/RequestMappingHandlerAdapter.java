@@ -792,6 +792,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			}
 			else {
 				// No HttpSession available -> no mutex necessary
+				// Controller里面具体方法调用
 				mav = invokeHandlerMethod(request, response, handlerMethod);
 			}
 		}
