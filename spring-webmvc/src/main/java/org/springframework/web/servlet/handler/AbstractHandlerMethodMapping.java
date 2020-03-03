@@ -367,10 +367,13 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	@Override
 	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
+		//从request对象中获取uri
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		this.mappingRegistry.acquireReadLock();
 		try {
+			//根据uri从映射关系中找到对应的HandlerMethod对象
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
+			//把Controller类实例化
 			return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
 		}
 		finally {
@@ -390,6 +393,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	@Nullable
 	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
 		List<Match> matches = new ArrayList<>();
+		//directPathMatches是RequestMethodInfo对象
 		List<T> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
 		if (directPathMatches != null) {
 			addMatchingMappings(directPathMatches, matches, request);
@@ -430,8 +434,12 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	private void addMatchingMappings(Collection<T> mappings, List<Match> matches, HttpServletRequest request) {
 		for (T mapping : mappings) {
+			//根据request的信息去匹配一个action；最后得到一个RequestMethodInfo对象
 			T match = getMatchingMapping(mapping, request);
 			if (match != null) {
+				//RequestMethodInfo对象和HandlerMethod对象封装到Match对象中；其实就是@RequestMethod注解属性和Method对象的映射
+				//this.mappingRegistry.getMappings().get(mapping)) 返回一个HandlerMethod对象
+				//matches添加Match对象;
 				matches.add(new Match(match, this.mappingRegistry.getMappings().get(mapping)));
 			}
 		}
@@ -592,6 +600,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			try {
 				//创建HandlerMethod对象，这个时候handler是一个Controller类
 				HandlerMethod handlerMethod = createHandlerMethod(handler, method);
+				//校验唯一性
 				assertUniqueMethodMapping(handlerMethod, mapping);
 
 				//mapping是RequestMappingInfo对象，这个里面有方法对象，如果一个方向反射调用method.invoke() ,第一个参数是实例对象 ，第二个参数就是方法调用参数
@@ -764,6 +773,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 		private final HandlerMethod handlerMethod;
 
+		//mapping =》 RequestMethodInfo对象
 		public Match(T mapping, HandlerMethod handlerMethod) {
 			this.mapping = mapping;
 			this.handlerMethod = handlerMethod;
