@@ -83,6 +83,7 @@ public class ModelAndViewMethodReturnValueHandler implements HandlerMethodReturn
 			return;
 		}
 
+		//@ModelAttribute注解方法调用返回值
 		ModelAndView mav = (ModelAndView) returnValue;
 		if (mav.isReference()) {
 			String viewName = mav.getViewName();

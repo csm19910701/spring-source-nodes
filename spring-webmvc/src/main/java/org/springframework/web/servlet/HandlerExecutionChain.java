@@ -153,6 +153,8 @@ public class HandlerExecutionChain {
 		if (!ObjectUtils.isEmpty(interceptors)) {
 			for (int i = interceptors.length - 1; i >= 0; i--) {
 				HandlerInterceptor interceptor = interceptors[i];
+				//mv 可能包含viewName 和 modelAndView
+				//应用场景 在调用@Controller方法后，可以修改ViewName和ModelAndView相关信息
 				interceptor.postHandle(request, response, this.handler, mv);
 			}
 		}

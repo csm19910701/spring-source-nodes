@@ -1042,7 +1042,7 @@ public class DispatcherServlet extends FrameworkServlet {
 					return;
 				}
 
-				//调用Controller具体方法，核心方法调用
+				//调用Controller具体方法，核心方法调用 ，这里注意一下如果返回值有@RequestBody注解，这个mv返回值就是为null
 				// Actually invoke the handler.
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 

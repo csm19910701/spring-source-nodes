@@ -902,7 +902,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				invocableMethod = invocableMethod.wrapConcurrentResult(result);
 			}
 
-			//Controller方法调用，重点看
+			//Controller方法调用，mavContainer就会存有@ModelAttribute注解方法的返回值
 			invocableMethod.invokeAndHandle(webRequest, mavContainer);
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				return null;
@@ -1013,6 +1013,8 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			ModelFactory modelFactory, NativeWebRequest webRequest) throws Exception {
 
 		modelFactory.updateModel(webRequest, mavContainer);
+		// RequestResponseBodyMethodProcessor handlerReturnValue() 方法会设置这个属性
+		// 返回值添加@RequestBody属性注解，那么数据已响应流的方式返回给调用方
 		if (mavContainer.isRequestHandled()) {
 			return null;
 		}
