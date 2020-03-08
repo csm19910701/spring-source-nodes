@@ -1063,6 +1063,8 @@ public class DispatcherServlet extends FrameworkServlet {
 				// making them available for @ExceptionHandler methods and other scenarios.
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
 			}
+
+			//视图渲染
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {
@@ -1110,6 +1112,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		boolean errorView = false;
 
+		//异常处理
 		if (exception != null) {
 			if (exception instanceof ModelAndViewDefiningException) {
 				logger.debug("ModelAndViewDefiningException encountered", exception);
@@ -1122,6 +1125,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 
+		// 视图渲染，响应视图
 		// Did the handler return a view to render?
 		if (mv != null && !mv.wasCleared()) {
 			render(mv, request, response);
@@ -1140,6 +1144,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			return;
 		}
 
+		// 后置过滤器，做一些资源释放
 		if (mappedHandler != null) {
 			mappedHandler.triggerAfterCompletion(request, response, null);
 		}
@@ -1421,7 +1426,9 @@ public class DispatcherServlet extends FrameworkServlet {
 			Locale locale, HttpServletRequest request) throws Exception {
 
 		if (this.viewResolvers != null) {
+			//viewResolvers 是通过@Bean方式注入的
 			for (ViewResolver viewResolver : this.viewResolvers) {
+				// 这又是一个策略模式
 				View view = viewResolver.resolveViewName(viewName, locale);
 				if (view != null) {
 					return view;
