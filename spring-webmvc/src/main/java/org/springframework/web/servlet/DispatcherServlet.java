@@ -1125,7 +1125,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 
-		// 视图渲染，响应视图
+		// 如果mv==null 那就说明已流的方式响应数据了 ，如果mv！=null就表示视图渲染，响应视图
 		// Did the handler return a view to render?
 		if (mv != null && !mv.wasCleared()) {
 			render(mv, request, response);
@@ -1312,6 +1312,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		// Check registered HandlerExceptionResolvers...
 		ModelAndView exMv = null;
 		if (this.handlerExceptionResolvers != null) {
+			//handlerExceptionResolvers 也是通过@Bean方式注入进来的
 			for (HandlerExceptionResolver resolver : this.handlerExceptionResolvers) {
 				exMv = resolver.resolveException(request, response, handler, ex);
 				if (exMv != null) {
