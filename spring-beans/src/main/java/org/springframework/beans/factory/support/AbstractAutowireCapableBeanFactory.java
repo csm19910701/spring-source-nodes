@@ -554,7 +554,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
 		if (instanceWrapper == null) {
-			//创建实例,,重点看，重要程度：5
+			//创建实例,,重点看，重要程度：5 ,主要是三种方式创建
+			// 1：BeanDefinition中的FactoryMethod 创建Bean实例
+			// 2：有参构造函数实例化
+			// 3：无参构造函数实例化
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
 		final Object bean = instanceWrapper.getWrappedInstance();
@@ -592,7 +595,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				logger.trace("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
-			//这里着重理解，对理解循环依赖帮助非常大，重要程度 5   添加三级缓存
+			//这里着重理解，对理解循环依赖帮助非常大，重要程度 5   添加三级缓存存放的是ObjectFactory<?>对象。缓存是实例的一套策略，允许你对当前的实例修改
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -1157,7 +1160,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
 
-		//如果有FactoryMethodName属性
+		//如果有FactoryMethodName属性 ，@Bean这种方式注入就是走这段代码
 		if (mbd.getFactoryMethodName() != null) {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
