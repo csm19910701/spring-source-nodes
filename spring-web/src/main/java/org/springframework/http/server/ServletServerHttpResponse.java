@@ -100,6 +100,7 @@ public class ServletServerHttpResponse implements ServerHttpResponse {
 		if (!this.headersWritten) {
 			getHeaders().forEach((headerName, headerValues) -> {
 				for (String headerValue : headerValues) {
+					// 设置response输出属性
 					this.servletResponse.addHeader(headerName, headerValue);
 				}
 			});

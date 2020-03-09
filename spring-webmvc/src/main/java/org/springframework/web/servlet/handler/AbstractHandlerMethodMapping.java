@@ -578,6 +578,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		 */
 		public CorsConfiguration getCorsConfiguration(HandlerMethod handlerMethod) {
 			HandlerMethod original = handlerMethod.getResolvedFromHandlerMethod();
+			// handlerMethod 和 跨域配置信息建立的隐射关系
 			return this.corsLookup.get(original != null ? original : handlerMethod);
 		}
 
@@ -609,6 +610,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 				List<String> directUrls = getDirectUrls(mapping);
 				for (String url : directUrls) {
+					// url字符串和RequestMethodInfo映射关系
 					this.urlLookup.add(url, mapping);
 				}
 
@@ -618,8 +620,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 					addMappingName(name, handlerMethod);
 				}
 
+				// 判断Method上面是否有CrossOrigin注解，把注解里面的属性封装成CrosConfiguration对象
 				CorsConfiguration corsConfig = initCorsConfiguration(handler, method, mapping);
 				if (corsConfig != null) {
+					// 然后奖励handlerMethod 和 跨域配置的关系
 					this.corsLookup.put(handlerMethod, corsConfig);
 				}
 
